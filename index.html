@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja do Cria</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #00ff88;
+    }
+
+    .produto {
+      background: #222;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .produto label {
+      cursor: pointer;
+    }
+
+    button {
+      background: #00ff88;
+      color: #111;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+      display: block;
+      width: 100%;
+    }
+
+    button:hover {
+      background: #00cc6b;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Escolha seus produtos</h1>
+
+  <div class="produto">
+    <label><input type="checkbox" value="Camisa Retrô do Flamengo"> Camisa Retrô do Flamengo</label>
+  </div>
+  <div class="produto">
+    <label><input type="checkbox" value="Camisa Retrô do Vasco"> Camisa Retrô do Vasco</label>
+  </div>
+  <div class="produto">
+    <label><input type="checkbox" value="Camisa Retrô do Fluminense"> Camisa Retrô do Fluminense</label>
+  </div>
+  <div class="produto">
+    <label><input type="checkbox" value="Camisa Retrô do Botafogo"> Camisa Retrô do Botafogo</label>
+  </div>
+
+  <button onclick="enviarPedido()">Finalizar Pedido via WhatsApp</button>
+
+  <script>
+    function enviarPedido() {
+      const numero = "5521975825319"; // Troca aqui pro teu número com DDI
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+      if (checkboxes.length === 0) {
+        alert("Escolhe pelo menos um produto aí, cria!");
+        return;
+      }
+
+      let mensagem = "Fala, cria! Quero comprar os seguintes produtos:%0A";
+      checkboxes.forEach(cb => {
+        mensagem += `- ${cb.value}%0A`;
+      });
+
+      const link = `https://wa.me/${numero}?text=${mensagem}`;
+      window.open(link, '_blank');
+    }
+  </script>
+
+</body>
+</html>
