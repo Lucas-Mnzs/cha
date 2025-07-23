@@ -18,6 +18,11 @@
       background-color: #485737;
     }
 
+    @font-face {
+      font-family: 'the seasons';
+      src: url("Fontspring-DEMO-theseasons-lt.otf") format("opentype");
+    }
+
     .card {
     background-image: url('convite.png');
     background-size: contain;
@@ -25,27 +30,18 @@
     background-position: center;
     height: 100%;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
     .btn {
-      padding: 15px 25px;
-      background-color: #ffffffcc;
-      color: #333;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      top: 60%;
+      left: 50%;
+      width: 300px;
+      color: #fff;
       text-decoration: none;
-      font-size: 20px;
-      font-weight: bold;
-      border-radius: 10px;
-      border: 2px solid #333;
-      transition: 0.3s ease;
-    }
-
-    .btn:hover {
-      background-color: #fff;
-      color: #000;
-      transform: scale(1.05);
+      font-size: 15px;
+      font-family: "the seasons", Arial, sans-serif;
     }
   </style>
 </head>
