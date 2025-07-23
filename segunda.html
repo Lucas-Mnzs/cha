@@ -131,31 +131,95 @@
   <div class="produto"><label><input type="checkbox" value="Avental"> Avental</label></div>
   <div class="produto"><label><input type="checkbox" value="Potes de Plástico"> Potes de Plástico</label></div>
 
-  <button class="enviar" onclick="enviarPedido()">Enviar Lista via WhatsApp</button>
+  <button class="enviar" onclick="mostrarResumo()">Revisar Itens Selecionados</button>
+
+    <div id="resumo" style="display:none; margin-top: 30px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+    <h2 style="margin-top: 0;">📝 Itens Selecionados</h2>
+    <ul id="lista-resumo" style="padding-left: 20px; list-style: none;"></ul>
+    <button onclick="limparResumo()" style="margin-top: 10px; background-color: #ff4d4d; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">🧹 Limpar Revisão</button>
+    <button class="enviar" onclick="enviarPedido()">Enviar Lista via WhatsApp</button>
+    </div>
 
   <script>
-    function enviarPedido() {
-      const numero = "5521975825319";
-      const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-      if (checkboxes.length === 0) {
-        alert("Marca pelo menos um item aí, cria!");
-        return;
-      }
+  function mostrarResumo() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    const listaResumo = document.getElementById("lista-resumo");
+    listaResumo.innerHTML = "";
 
-      let mensagem = "Oi! Eu gostaria de presentear com os seguintes itens do chá de panela:%0A";
-      checkboxes.forEach(cb => {
-        mensagem += `- ${cb.value}%0A`;
-      });
-
-      const link = `https://wa.me/${numero}?text=${mensagem}`;
-      window.open(link, '_blank');
+    if (checkboxes.length === 0) {
+      alert("Marca pelo menos um item aí, cria!");
+      return;
     }
 
-    function contatoWhatsApp() {
-      const link = "https://wa.me/5521975825319?text=Oi%2C+tenho+uma+d%C3%BAvida+sobre+o+chá+de+panela!";
-      window.open(link, '_blank');
+    checkboxes.forEach(cb => {
+      adicionarItemNoResumo(cb.value);
+    });
+
+    document.getElementById("resumo").style.display = "block";
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  }
+
+function adicionarItemNoResumo(valor) {
+  const li = document.createElement("li");
+  li.style.marginBottom = "8px";
+  li.setAttribute("data-item", valor); // usamos isso pra rastrear o checkbox depois
+
+  li.innerHTML = `✅ ${valor} 
+    <button onclick="removerItem(this)" 
+      style="margin-left: 10px; background: none; color: red; font-weight: bold; border: none; cursor: pointer;">
+      ❌
+    </button>`;
+
+  document.getElementById("lista-resumo").appendChild(li);
+}
+
+function removerItem(botao) {
+  const li = botao.parentElement;
+  const valor = li.getAttribute("data-item");
+
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    if (cb.value === valor) {
+      cb.checked = false;
     }
-  </script>
+  });
+
+  li.remove();
+}
+
+  function removerItem(botao) {
+    const li = botao.parentElement;
+    li.remove();
+  }
+
+  function limparResumo() {
+    document.getElementById("lista-resumo").innerHTML = "";
+  }
+
+  function enviarPedido() {
+    const numero = "5521975825319";
+    const itens = document.querySelectorAll("#lista-resumo li");
+
+    if (itens.length === 0) {
+      alert("Nenhum item pra enviar, cria! Marca aí primeiro.");
+      return;
+    }
+
+    let mensagem = "Oi! Eu gostaria de presentear com os seguintes itens do chá de panela:%0A";
+    itens.forEach(li => {
+      const texto = li.textContent.replace("❌", "").trim();
+      mensagem += `- ${texto}%0A`;
+    });
+
+    const link = `https://wa.me/${numero}?text=${mensagem}`;
+    window.open(link, '_blank');
+  }
+
+  function contatoWhatsApp() {
+    const link = "https://wa.me/5521975825319?text=Oi%2C+tenho+uma+d%C3%BAvida+sobre+o+ch%C3%A1+de+panela!";
+    window.open(link, '_blank');
+  }
+</script>
 
 </body>
 </html>
