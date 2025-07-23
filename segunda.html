@@ -6,8 +6,8 @@
   <title>Lista de Chá de Panela</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #eee, #ccc);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f7d9d9, #ffeaea);
       color: #333;
       margin: 0;
       padding: 20px;
@@ -15,17 +15,16 @@
 
     h1 {
       text-align: center;
-      color: #000;
+      color: #c0392b;
     }
 
-    .informativo {
+    .informativo, .produto, #resumo {
       background: #fff;
-      border-left: 6px solid #888;
+      border-radius: 15px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
       padding: 20px;
       margin: 20px auto;
-      max-width: 700px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      max-width: 750px;
     }
 
     .informativo p {
@@ -39,21 +38,17 @@
       border: none;
       padding: 10px 20px;
       margin-top: 15px;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 16px;
       cursor: pointer;
+      transition: 0.2s;
     }
 
     .botao-contato:hover {
-      background: #20ba5a;
+      background: #1ebd5a;
     }
 
     .produto {
-      background: #fff;
-      margin: 8px 0;
-      padding: 10px 12px;
-      border-radius: 6px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       display: flex;
       align-items: center;
     }
@@ -63,20 +58,52 @@
       width: 100%;
     }
 
-    button.enviar {
-      background: linear-gradient(to right, #555, #222);
+    .enviar {
+      background: linear-gradient(to right, #ff8080, #e35a5a);
       color: #fff;
-      padding: 12px;
+      padding: 14px 20px;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 10px;
+      font-size: 17px;
       cursor: pointer;
       width: 100%;
       margin-top: 30px;
+      transition: 0.3s;
     }
 
-    button.enviar:hover {
-      background: linear-gradient(to right, #444, #111);
+    .enviar:hover {
+      background: linear-gradient(to right, #ff6666, #cc4444);
+    }
+
+    #lista-resumo li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    #lista-resumo button {
+      background: none;
+      color: red;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .limpar {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .limpar:hover {
+      background-color: #d93636;
     }
   </style>
 </head>
