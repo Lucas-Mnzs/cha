@@ -5,70 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chá de Casa Nova 🎁</title>
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f7d9d9, #ffeaea);
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
+      box-sizing: border-box;
     }
 
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 1.2em;
-      margin: 6px 0;
-    }
-
-    .btn {
-      margin-top: 25px;
-      padding: 15px 30px;
-      font-size: 1.1em;
-      background-color: #ff8080;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: 0.3s;
-    }
-
-    .btn:hover {
-      background-color: #e35a5a;
+    body, html {
+      height: 100%;
+      width: 100%;
+      font-family: Arial, sans-serif;
+      background-color: #D4E1DF;
     }
 
     .card {
-      background: #fff;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-      max-width: 500px;
-      width: 90%;
-      height: 60%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+    background-image: url('convite.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+    .btn {
+      padding: 15px 25px;
+      background-color: #ffffffcc;
+      color: #333;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 10px;
+      border: 2px solid #333;
+      transition: 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #fff;
+      color: #000;
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>🎉 Bem-vindo ao nosso Chá de Casa Nova!</h1>
-    <p><strong>📅 Data:</strong> 24 de Agosto de 2025</p>
-    <p><strong>🕓 Horário:</strong> 16h</p>
-    <p><strong>📍 Local:</strong> Rua das Laranjeiras, 123 – Rio de Janeiro</p>
-    <p>Estamos muito felizes em te receber nesse momento especial!</p>
-    
     <a href="segunda.html" class="btn">Ver Lista de Presentes 🎁</a>
   </div>
 </body>
