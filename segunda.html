@@ -5,106 +5,121 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lista de Chá de Panela</title>
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f7d9d9, #ffeaea);
-      color: #333;
-      margin: 0;
-      padding: 20px;
-    }
+@font-face {
+    font-family: 'the seasons';
+    src: url("Fontspring-DEMO-theseasons-lt.otf") format("opentype");
+  }
 
-    h1 {
-      text-align: center;
-      color: #c0392b;
-    }
+  body {
+    font-family: 'the seasons', Arial, sans-serif;
+    background-color: #485737;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+  }
 
-    .informativo, .produto, #resumo {
-      background: #fff;
-      border-radius: 15px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-      padding: 20px;
-      margin: 20px auto;
-      max-width: 750px;
-    }
+  h1 {
+    text-align: center;
+    color: #ffffff;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+  }
 
-    .informativo p {
-      margin: 8px 0;
-      font-size: 16px;
-    }
+  .informativo, .produto, #resumo {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 800px;
+    color: #333;
+  }
 
-    .botao-contato {
-      background: #25D366;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      margin-top: 15px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+  .informativo p {
+    margin: 10px 0;
+    font-size: 16px;
+    line-height: 1.6;
+  }
 
-    .botao-contato:hover {
-      background: #1ebd5a;
-    }
+  .botao-contato {
+    background: #2f8c4f;
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    margin-top: 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
 
-    .produto {
-      display: flex;
-      align-items: center;
-    }
+  .botao-contato:hover {
+    background: #256b3e;
+  }
 
-    .produto label {
-      cursor: pointer;
-      width: 100%;
-    }
+  .produto {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 16px;
+  }
 
-    .enviar {
-      background: linear-gradient(to right, #ff8080, #e35a5a);
-      color: #fff;
-      padding: 14px 20px;
-      border: none;
-      border-radius: 10px;
-      font-size: 17px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 30px;
-      transition: 0.3s;
-    }
+  .produto input {
+    margin-right: 10px;
+    transform: scale(1.3);
+  }
 
-    .enviar:hover {
-      background: linear-gradient(to right, #ff6666, #cc4444);
-    }
+  .enviar {
+    background-color: #2f8c4f;
+    color: #fff;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 30px;
+    font-family: 'the seasons', Arial, sans-serif;
+    transition: 0.3s;
+  }
 
-    #lista-resumo li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
-      border-bottom: 1px solid #eee;
-    }
+  .enviar:hover {
+    background-color: #256b3e;
+  }
 
-    #lista-resumo button {
-      background: none;
-      color: red;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-      font-size: 18px;
-    }
+  #lista-resumo li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+  }
 
-    .limpar {
-      background-color: #ff4d4d;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
+  #lista-resumo button {
+    background: none;
+    color: red;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+  }
 
-    .limpar:hover {
-      background-color: #d93636;
-    }
+  .limpar {
+    background-color: #cc0000;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-family: 'the seasons', Arial, sans-serif;
+    transition: 0.3s;
+  }
+
+  .limpar:hover {
+    background-color: #a80000;
+  }
   </style>
 </head>
 <body>
