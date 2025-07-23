@@ -4,264 +4,220 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lista de Chá de Panela</title>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      addDoc
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCjiUhEZQkAEaE-J9sjN3QJchbLIVdCot0",
+      authDomain: "lista-de-casamento-b8939.firebaseapp.com",
+      projectId: "lista-de-casamento-b8939",
+      storageBucket: "lista-de-casamento-b8939.appspot.com",
+      messagingSenderId: "665476991588",
+      appId: "1:665476991588:web:4c6e99e2c6007ef0e2ad71"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const produtos = [
+      "Conjunto de Panelas", "Jogo de Talheres", "Jogo de Pratos", "Jogo de Copos",
+      "Frigideira Antiaderente", "Pirex", "Escorredor de Macarrão", "Assadeira",
+      "Colheres de Silicone", "Tábuas de Corte", "Panela de Pressão", "Forma de Bolo",
+      "Ralador", "Abridor de Latas", "Espremedor de Alho", "Jarra de Suco", "Cesto de Roupa",
+      "Varal", "Bacia para roupas", "Pregadores de roupa", "Baldes", "Toalhas de Banho",
+      "Toalhas de Rosto", "Tapete de Banheiro", "Porta Sabonete", "Lixeira de Banheiro",
+      "Jogo de Cama", "Travesseiros", "Cobertores", "Edredom", "Protetor de Colchão",
+      "Jogo Americano", "Centro de Mesa", "Relógio de Parede", "Lixeira para Cozinha",
+      "Porta-Temperos", "Panos de Prato", "Avental", "Potes de Plástico"
+    ];
+
+    const lista = document.getElementById("lista-produtos");
+
+    async function carregarProdutos() {
+      const snapshot = await getDocs(collection(db, "presentes"));
+      const enviados = new Set();
+      snapshot.forEach(doc => enviados.add(doc.data().nome));
+
+      produtos.forEach(nome => {
+        if (!enviados.has(nome)) {
+          const div = document.createElement("div");
+          div.className = "produto";
+          div.innerHTML = `<label><input type="checkbox" value="${nome}">${nome}</label>`;
+          lista.appendChild(div);
+        }
+      });
+    }
+
+    window.mostrarResumo = () => {
+      const selecionados = document.querySelectorAll('input[type="checkbox"]:checked');
+      const listaResumo = document.getElementById("lista-resumo");
+      listaResumo.innerHTML = "";
+      selecionados.forEach(cb => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          ${cb.value}
+          <button onclick="removerItem(this, '${cb.value}')">✖</button>
+        `;
+        listaResumo.appendChild(li);
+      });
+      document.getElementById("resumo").style.display = "block";
+    };
+
+    window.removerItem = (botao, nome) => {
+      botao.parentElement.remove();
+      const checkbox = [...document.querySelectorAll('input[type="checkbox"]')].find(cb => cb.value === nome);
+      if (checkbox) checkbox.checked = false;
+    };
+
+    window.limparResumo = () => {
+      document.getElementById("lista-resumo").innerHTML = "";
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    };
+
+    window.enviarPedido = async () => {
+      const nomePessoa = document.getElementById("nome-pessoa").value.trim();
+      if (!nomePessoa) {
+        alert("Por favor, insira seu nome.");
+        return;
+      }
+
+      const numero = "5521975825319";
+      const selecionados = [...document.querySelectorAll('input[type="checkbox"]:checked')];
+      if (selecionados.length === 0) {
+        alert("Selecione pelo menos um item.");
+        return;
+      }
+
+      let mensagem = `Olá! Me chamo *${nomePessoa}* e gostaria de presentear com:\n`;
+
+      for (const cb of selecionados) {
+        mensagem += `- ${cb.value}\n`;
+        await addDoc(collection(db, "presentes"), {
+          nome: cb.value,
+          enviado: true,
+          por: nomePessoa,
+          timestamp: Date.now()
+        });
+      }
+
+      const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+      window.open(url, "_blank");
+      alert("Itens marcados como enviados com sucesso!");
+      location.reload();
+    };
+
+    carregarProdutos();
+  </script>
+
   <style>
-@font-face {
-    font-family: 'the seasons';
-    src: url("Fontspring-DEMO-theseasons-lt.otf") format("opentype");
-  }
+    body {
+      font-family: sans-serif;
+      background: #f7f7f7;
+      color: #333;
+      padding: 20px;
+    }
 
-  body {
-    font-family: 'the seasons', Arial, sans-serif;
-    background-color: #485737;
-    color: #fff;
-    margin: 0;
-    padding: 20px;
-  }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-  h1 {
-    text-align: center;
-    color: #ffffff;
-    font-size: 2.5rem;
-    margin-bottom: 30px;
-  }
+    .produto {
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px 15px;
+      margin: 10px auto;
+      max-width: 700px;
+      display: flex;
+      align-items: center;
+    }
 
-  .informativo, .produto, #resumo {
-    background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    padding: 20px;
-    margin: 20px auto;
-    max-width: 800px;
-    color: #333;
-  }
+    .produto input {
+      margin-right: 10px;
+      transform: scale(1.3);
+    }
 
-  .informativo p {
-    margin: 10px 0;
-    font-size: 16px;
-    line-height: 1.6;
-  }
+    .btn {
+      padding: 12px 20px;
+      background: #2f8c4f;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px auto;
+      display: block;
+      max-width: 700px;
+    }
 
-  .botao-contato {
-    background: #2f8c4f;
-    color: #fff;
-    border: none;
-    padding: 12px 25px;
-    margin-top: 20px;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
+    .btn:hover {
+      background: #256b3e;
+    }
 
-  .botao-contato:hover {
-    background: #256b3e;
-  }
+    #resumo {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 30px auto;
+      max-width: 700px;
+      display: none;
+    }
 
-  .produto {
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
-    font-size: 16px;
-  }
+    #lista-resumo li {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
 
-  .produto input {
-    margin-right: 10px;
-    transform: scale(1.3);
-  }
+    #lista-resumo button {
+      background: red;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
-  .enviar {
-    background-color: #2f8c4f;
-    color: #fff;
-    padding: 14px 20px;
-    border: none;
-    border-radius: 12px;
-    font-size: 18px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 30px;
-    font-family: 'the seasons', Arial, sans-serif;
-    transition: 0.3s;
-  }
+    #campo-nome {
+      margin-bottom: 15px;
+    }
 
-  .enviar:hover {
-    background-color: #256b3e;
-  }
-
-  #lista-resumo li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #ddd;
-    font-size: 16px;
-  }
-
-  #lista-resumo button {
-    background: none;
-    color: red;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-  }
-
-  .limpar {
-    background-color: #cc0000;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-top: 15px;
-    font-family: 'the seasons', Arial, sans-serif;
-    transition: 0.3s;
-  }
-
-  .limpar:hover {
-    background-color: #a80000;
-  }
+    #campo-nome input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Lista de Chá de Panela</h1>
+  <h1>🎁 Lista de Presentes - Chá de Panela</h1>
 
-  <div class="informativo">
-    <p><strong>🎁 Preferência de cores:</strong> preto, transparente, branco e cinza.</p>
-    <p><strong>✅ Você pode escolher mais de um presente!</strong></p>
-    <p>📦 Se tiver dúvidas ou quiser confirmar algum item, entre em contato com a gente no WhatsApp clicando abaixo:</p>
-    <button class="botao-contato" onclick="contatoWhatsApp()">Falar com a gente</button>
-  </div>
+  <div id="lista-produtos"></div>
 
-  <div class="produto"><label><input type="checkbox" value="Conjunto de Panelas"> Conjunto de Panelas</label></div>
-  <div class="produto"><label><input type="checkbox" value="Jogo de Talheres"> Jogo de Talheres</label></div>
-  <div class="produto"><label><input type="checkbox" value="Jogo de Pratos"> Jogo de Pratos</label></div>
-  <div class="produto"><label><input type="checkbox" value="Jogo de Copos"> Jogo de Copos</label></div>
-  <div class="produto"><label><input type="checkbox" value="Pirex"> Pirex</label></div>
-  <div class="produto"><label><input type="checkbox" value="Frigideira Antiaderente"> Frigideira Antiaderente</label></div>
-  <div class="produto"><label><input type="checkbox" value="Escorredor de Macarrão"> Escorredor de Macarrão</label></div>
-  <div class="produto"><label><input type="checkbox" value="Assadeira"> Assadeira</label></div>
-  <div class="produto"><label><input type="checkbox" value="Colheres de Silicone"> Colheres de Silicone</label></div>
-  <div class="produto"><label><input type="checkbox" value="Tábuas de Corte"> Tábuas de Corte</label></div>
-  <div class="produto"><label><input type="checkbox" value="Panela de Pressão"> Panela de Pressão</label></div>
-  <div class="produto"><label><input type="checkbox" value="Forma de Bolo"> Forma de Bolo</label></div>
-  <div class="produto"><label><input type="checkbox" value="Ralador"> Ralador</label></div>
-  <div class="produto"><label><input type="checkbox" value="Abridor de Latas"> Abridor de Latas</label></div>
-  <div class="produto"><label><input type="checkbox" value="Espremedor de Alho"> Espremedor de Alho</label></div>
-  <div class="produto"><label><input type="checkbox" value="Jarra de Suco"> Jarra de Suco</label></div>
-  <div class="produto"><label><input type="checkbox" value="Cesto de Roupa"> Cesto de Roupa</label></div>
-  <div class="produto"><label><input type="checkbox" value="Varal"> Varal</label></div>
-  <div class="produto"><label><input type="checkbox" value="Bacia para roupas"> Bacia para roupas</label></div>
-  <div class="produto"><label><input type="checkbox" value="Pregadores de roupa"> Pregadores de roupa</label></div
-  ><div class="produto"><label><input type="checkbox" value="Baldes"> Baldes</label></div>
-  <div class="produto"><label><input type="checkbox" value="Toalhas de Banho"> Toalhas de Banho</label></div>
-  <div class="produto"><label><input type="checkbox" value="Toalhas de Rosto"> Toalhas de Rosto</label></div>
-  <div class="produto"><label><input type="checkbox" value="Tapete de Banheiro"> Tapete de Banheiro</label></div>
-  <div class="produto"><label><input type="checkbox" value="Porta Sabonete"> Porta Sabonete</label></div>
-  <div class="produto"><label><input type="checkbox" value="Lixeira de Banheiro"> Lixeira de Banheiro</label></div>
-  <div class="produto"><label><input type="checkbox" value="Jogo de Cama"> Jogo de Cama</label></div>
-  <div class="produto"><label><input type="checkbox" value="Travesseiros"> Travesseiros</label></div>
-  <div class="produto"><label><input type="checkbox" value="Cobertores"> Cobertores</label></div>
-  <div class="produto"><label><input type="checkbox" value="Edredom"> Edredom</label></div>
-  <div class="produto"><label><input type="checkbox" value="Protetor de Colchão"> Protetor de Colchão</label></div>
-  <div class="produto"><label><input type="checkbox" value="Jogo Americano"> Jogo Americano</label></div>
-  <div class="produto"><label><input type="checkbox" value="Centro de Mesa"> Centro de Mesa</label></div>
-  <div class="produto"><label><input type="checkbox" value="Relógio de Parede"> Relógio de Parede</label></div>
-  <div class="produto"><label><input type="checkbox" value="Lixeira para Cozinha"> Lixeira para Cozinha</label></div>
-  <div class="produto"><label><input type="checkbox" value="Porta-Temperos"> Porta-Temperos</label></div>
-  <div class="produto"><label><input type="checkbox" value="Panos de Prato"> Panos de Prato</label></div>
-  <div class="produto"><label><input type="checkbox" value="Avental"> Avental</label></div>
-  <div class="produto"><label><input type="checkbox" value="Potes de Plástico"> Potes de Plástico</label></div>
+  <button class="btn" onclick="mostrarResumo()">Revisar Itens Selecionados</button>
 
-  <button class="enviar" onclick="mostrarResumo()">Revisar Itens Selecionados</button>
+  <div id="resumo">
+    <h2>📝 Itens Selecionados</h2>
 
-    <div id="resumo" style="display:none; margin-top: 30px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
-    <h2 style="margin-top: 0;">📝 Itens Selecionados</h2>
-    <ul id="lista-resumo" style="padding-left: 20px; list-style: none;"></ul>
-    <button onclick="limparResumo()" style="margin-top: 10px; background-color: #ff4d4d; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">🧹 Limpar Revisão</button>
-    <button class="enviar" onclick="enviarPedido()">Enviar Lista via WhatsApp</button>
+    <div id="campo-nome">
+      <input id="nome-pessoa" type="text" placeholder="Digite seu nome">
     </div>
 
-  <script>
-  function mostrarResumo() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-    const listaResumo = document.getElementById("lista-resumo");
-    listaResumo.innerHTML = "";
-
-    if (checkboxes.length === 0) {
-      alert("Marca pelo menos um item aí, cria!");
-      return;
-    }
-
-    checkboxes.forEach(cb => {
-      adicionarItemNoResumo(cb.value);
-    });
-
-    document.getElementById("resumo").style.display = "block";
-    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-  }
-
-function adicionarItemNoResumo(valor) {
-  const li = document.createElement("li");
-  li.style.marginBottom = "8px";
-  li.setAttribute("data-item", valor); // usamos isso pra rastrear o checkbox depois
-
-  li.innerHTML = `✅ ${valor} 
-    <button onclick="removerItem(this)" 
-      style="margin-left: 10px; background: none; color: red; font-weight: bold; border: none; cursor: pointer;">
-      ❌
-    </button>`;
-
-  document.getElementById("lista-resumo").appendChild(li);
-}
-
-function removerItem(botao) {
-  const li = botao.parentElement;
-  const valor = li.getAttribute("data-item");
-
-  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-  checkboxes.forEach(cb => {
-    if (cb.value === valor) {
-      cb.checked = false;
-    }
-  });
-
-  li.remove();
-}
-
-  function removerItem(botao) {
-    const li = botao.parentElement;
-    li.remove();
-  }
-
-  function limparResumo() {
-    document.getElementById("lista-resumo").innerHTML = "";
-  }
-
-  function enviarPedido() {
-    const numero = "5521975825319";
-    const itens = document.querySelectorAll("#lista-resumo li");
-
-    if (itens.length === 0) {
-      alert("Nenhum item pra enviar, cria! Marca aí primeiro.");
-      return;
-    }
-
-    let mensagem = "Oi! Eu gostaria de presentear com os seguintes itens do chá de panela:%0A";
-    itens.forEach(li => {
-      const texto = li.textContent.replace("❌", "").trim();
-      mensagem += `- ${texto}%0A`;
-    });
-
-    const link = `https://wa.me/${numero}?text=${mensagem}`;
-    window.open(link, '_blank');
-  }
-
-  function contatoWhatsApp() {
-    const link = "https://wa.me/5521975825319?text=Oi%2C+tenho+uma+d%C3%BAvida+sobre+o+ch%C3%A1+de+panela!";
-    window.open(link, '_blank');
-  }
-</script>
+    <ul id="lista-resumo"></ul>
+    <button class="btn" onclick="limparResumo()">🧹 Limpar Tudo</button>
+    <button class="btn" onclick="enviarPedido()">✅ Enviar via WhatsApp</button>
+  </div>
 
 </body>
 </html>
