@@ -5,117 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lista de Chá de Panela</title>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      getDocs,
-      addDoc
-    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCjiUhEZQkAEaE-J9sjN3QJchbLIVdCot0",
-      authDomain: "lista-de-casamento-b8939.firebaseapp.com",
-      projectId: "lista-de-casamento-b8939",
-      storageBucket: "lista-de-casamento-b8939.appspot.com",
-      messagingSenderId: "665476991588",
-      appId: "1:665476991588:web:4c6e99e2c6007ef0e2ad71"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const produtos = [
-      "Conjunto de Panelas", "Jogo de Talheres", "Jogo de Pratos", "Jogo de Copos",
-      "Frigideira Antiaderente", "Pirex", "Escorredor de Macarrão", "Assadeira",
-      "Colheres de Silicone", "Tábuas de Corte", "Panela de Pressão", "Forma de Bolo",
-      "Ralador", "Abridor de Latas", "Espremedor de Alho", "Jarra de Suco", "Cesto de Roupa",
-      "Varal", "Bacia para roupas", "Pregadores de roupa", "Baldes", "Toalhas de Banho",
-      "Toalhas de Rosto", "Tapete de Banheiro", "Porta Sabonete", "Lixeira de Banheiro",
-      "Jogo de Cama", "Travesseiros", "Cobertores", "Edredom", "Protetor de Colchão",
-      "Jogo Americano", "Centro de Mesa", "Relógio de Parede", "Lixeira para Cozinha",
-      "Porta-Temperos", "Panos de Prato", "Avental", "Potes de Plástico"
-    ];
-
-    const lista = document.getElementById("lista-produtos");
-
-    async function carregarProdutos() {
-      const snapshot = await getDocs(collection(db, "presentes"));
-      const enviados = new Set();
-      snapshot.forEach(doc => enviados.add(doc.data().nome));
-
-      produtos.forEach(nome => {
-        if (!enviados.has(nome)) {
-          const div = document.createElement("div");
-          div.className = "produto";
-          div.innerHTML = `<label><input type="checkbox" value="${nome}">${nome}</label>`;
-          lista.appendChild(div);
-        }
-      });
-    }
-
-    window.mostrarResumo = () => {
-      const selecionados = document.querySelectorAll('input[type="checkbox"]:checked');
-      const listaResumo = document.getElementById("lista-resumo");
-      listaResumo.innerHTML = "";
-      selecionados.forEach(cb => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-          ${cb.value}
-          <button onclick="removerItem(this, '${cb.value}')">✖</button>
-        `;
-        listaResumo.appendChild(li);
-      });
-      document.getElementById("resumo").style.display = "block";
-    };
-
-    window.removerItem = (botao, nome) => {
-      botao.parentElement.remove();
-      const checkbox = [...document.querySelectorAll('input[type="checkbox"]')].find(cb => cb.value === nome);
-      if (checkbox) checkbox.checked = false;
-    };
-
-    window.limparResumo = () => {
-      document.getElementById("lista-resumo").innerHTML = "";
-      document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-    };
-
-    window.enviarPedido = async () => {
-      const nomePessoa = document.getElementById("nome-pessoa").value.trim();
-      if (!nomePessoa) {
-        alert("Por favor, insira seu nome.");
-        return;
-      }
-
-      const numero = "5521975825319";
-      const selecionados = [...document.querySelectorAll('input[type="checkbox"]:checked')];
-      if (selecionados.length === 0) {
-        alert("Selecione pelo menos um item.");
-        return;
-      }
-
-      let mensagem = `Olá! Me chamo *${nomePessoa}* e gostaria de presentear com:\n`;
-
-      for (const cb of selecionados) {
-        mensagem += `- ${cb.value}\n`;
-        await addDoc(collection(db, "presentes"), {
-          nome: cb.value,
-          enviado: true,
-          por: nomePessoa,
-          timestamp: Date.now()
-        });
-      }
-
-      const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
-      window.open(url, "_blank");
-      alert("Itens marcados como enviados com sucesso!");
-      location.reload();
-    };
-
-    carregarProdutos();
-  </script>
-
   <style>
     body {
       font-family: sans-serif;
@@ -197,7 +86,172 @@
       border-radius: 8px;
       border: 1px solid #ccc;
     }
+
+    /* Toast style */
+    #toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #2f8c4f;
+      color: white;
+      text-align: center;
+      border-radius: 10px;
+      padding: 16px;
+      position: fixed;
+      z-index: 9999;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      font-size: 17px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+
+    #toast.show {
+      visibility: visible;
+      animation: fadein 0.5s, fadeout 0.5s 3.5s;
+    }
+
+    @keyframes fadein {
+      from {bottom: 0; opacity: 0;}
+      to {bottom: 30px; opacity: 1;}
+    }
+
+    @keyframes fadeout {
+      from {bottom: 30px; opacity: 1;}
+      to {bottom: 0; opacity: 0;}
+    }
   </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      addDoc
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCjiUhEZQkAEaE-J9sjN3QJchbLIVdCot0",
+      authDomain: "lista-de-casamento-b8939.firebaseapp.com",
+      projectId: "lista-de-casamento-b8939",
+      storageBucket: "lista-de-casamento-b8939.appspot.com",
+      messagingSenderId: "665476991588",
+      appId: "1:665476991588:web:4c6e99e2c6007ef0e2ad71"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const produtos = [
+      "Conjunto de Panelas", "Jogo de Talheres", "Jogo de Pratos", "Jogo de Copos",
+      "Frigideira Antiaderente", "Pirex", "Escorredor de Macarrão", "Assadeira",
+      "Colheres de Silicone", "Tábuas de Corte", "Panela de Pressão", "Forma de Bolo",
+      "Ralador", "Abridor de Latas", "Espremedor de Alho", "Jarra de Suco", "Cesto de Roupa",
+      "Varal", "Bacia para roupas", "Pregadores de roupa", "Baldes", "Toalhas de Banho",
+      "Toalhas de Rosto", "Tapete de Banheiro", "Porta Sabonete", "Lixeira de Banheiro",
+      "Jogo de Cama", "Travesseiros", "Cobertores", "Edredom", "Protetor de Colchão",
+      "Jogo Americano", "Centro de Mesa", "Relógio de Parede", "Lixeira para Cozinha",
+      "Porta-Temperos", "Panos de Prato", "Avental", "Potes de Plástico"
+    ];
+
+    const lista = document.getElementById("lista-produtos");
+
+    async function carregarProdutos() {
+      // Buscar pedidos confirmados e ignorar esses produtos na lista
+      const pedidosSnapshot = await getDocs(collection(db, "pedidos"));
+      const produtosConfirmados = new Set();
+      pedidosSnapshot.forEach(doc => {
+        const data = doc.data();
+        if(data.status === "confirmado" && Array.isArray(data.itens)) {
+          data.itens.forEach(item => produtosConfirmados.add(item));
+        }
+      });
+
+      produtos.forEach(nome => {
+        if (!produtosConfirmados.has(nome)) {
+          const div = document.createElement("div");
+          div.className = "produto";
+          div.innerHTML = `<label><input type="checkbox" value="${nome}">${nome}</label>`;
+          lista.appendChild(div);
+        }
+      });
+    }
+
+    window.mostrarResumo = () => {
+      const selecionados = document.querySelectorAll('input[type="checkbox"]:checked');
+      const listaResumo = document.getElementById("lista-resumo");
+      listaResumo.innerHTML = "";
+      selecionados.forEach(cb => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          ${cb.value}
+          <button onclick="removerItem(this, '${cb.value}')">✖</button>
+        `;
+        listaResumo.appendChild(li);
+      });
+      document.getElementById("resumo").style.display = "block";
+    };
+
+    window.removerItem = (botao, nome) => {
+      botao.parentElement.remove();
+      const checkbox = [...document.querySelectorAll('input[type="checkbox"]')].find(cb => cb.value === nome);
+      if (checkbox) checkbox.checked = false;
+    };
+
+    window.limparResumo = () => {
+      document.getElementById("lista-resumo").innerHTML = "";
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+      document.getElementById("resumo").style.display = "none";
+    };
+
+    function mostrarToast(mensagem) {
+      const toast = document.getElementById("toast");
+      toast.textContent = mensagem;
+      toast.className = "show";
+      setTimeout(() => {
+        toast.className = toast.className.replace("show", "");
+      }, 4000);
+    }
+
+   window.enviarPedido = async () => {
+    const nomePessoa = document.getElementById("nome-pessoa").value.trim();
+    if (!nomePessoa) {
+      alert("Por favor, insira seu nome.");
+      return;
+    }
+
+    const selecionados = [...document.querySelectorAll('input[type="checkbox"]:checked')];
+    if (selecionados.length === 0) {
+      alert("Selecione pelo menos um item.");
+      return;
+    }
+
+    const itensEscolhidos = selecionados.map(cb => cb.value);
+
+    // Salva no Firestore
+    await addDoc(collection(db, "pedidos"), {
+      nome: nomePessoa,
+      itens: itensEscolhidos,
+      status: "pendente",
+      timestamp: Date.now()
+    });
+
+    // Mensagem de WhatsApp formatada
+    const numeroDestino = "5521975825319"; // Ex: 5531999998888
+    const mensagem = `Olá! Eu sou ${nomePessoa} e acabei de enviar os seguintes presentes:\n\n${itensEscolhidos.map(item => `- ${item}`).join('\n')}\n\n💚 Com carinho!`;
+    const linkWhatsApp = `https://wa.me/${numeroDestino}?text=${encodeURIComponent(mensagem)}`;
+
+    mostrarToast("Pedido registrado! Abrindo WhatsApp...");
+    setTimeout(() => {
+      window.location.href = linkWhatsApp;
+    }, 2500);
+
+    limparResumo();
+    lista.innerHTML = "";
+    carregarProdutos();
+  };
+    carregarProdutos();
+  </script>
 </head>
 <body>
 
@@ -216,8 +270,10 @@
 
     <ul id="lista-resumo"></ul>
     <button class="btn" onclick="limparResumo()">🧹 Limpar Tudo</button>
-    <button class="btn" onclick="enviarPedido()">✅ Enviar via WhatsApp</button>
+    <button class="btn" onclick="enviarPedido()">✅ Enviar Pedido</button>
   </div>
+
+  <div id="toast"></div>
 
 </body>
 </html>
